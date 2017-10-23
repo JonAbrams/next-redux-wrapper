@@ -1,151 +1,106 @@
-Redux wrapper for Next.js
+SpaceAce wrapper for Next.js
 =========================
-![Build status](https://travis-ci.org/kirill-konshin/next-redux-wrapper.svg?branch=master)
+![Build status](https://travis-ci.org/JonAbrams/next-spaceace-wrapper.svg?branch=master)
+
+## Status
+
+WIP. DO NOT USE (yet). So far just the readme's been touched.
+
+Forked from [next-redux-wrapper](https://github.com/kirill-konshin/next-redux-wrapper)
 
 ## Usage
 
 ```bash
-npm install next-redux-wrapper --save
+npm install next-spaceace-wrapper
 ```
 
-Wrapper has to be attached your page components (located in `/pages`). For safety it is recommended
-to wrap all pages, no matter if they use Redux or not, so that you should not care about it anymore in
-all child components.
+Wrapper should be attached your page components (located in your project's `/pages`). For safety it is recommended that you wrap all pages, whether they use SpaceAce or not.
 
-Here is the minimal setup (`makeStore` and `reducer` usually are located in other files):
-
+Here is an example minimal setup:
 ```js
 import React, {Component} from "react";
-import {createStore} from "redux";
-import withRedux from "next-redux-wrapper";
-
-const reducer = (state = {foo: ''}, action) => {
-    switch (action.type) {
-        case 'FOO':
-            return {...state, foo: action.payload};
-        default:
-            return state
-    }
-};
+import withSpace from "next-spaceace-wrapper";
 
 /**
 * @param {object} initialState
 * @param {boolean} options.isServer indicates whether it is a server side or client side
 * @param {Request} options.req NodeJS Request object (if any)
 * @param {boolean} options.debug User-defined debug mode param
-* @param {string} options.storeKey This key will be used to preserve store in global namespace for safe HMR 
+* @param {string} options.storeKey This key will be used to preserve store in global namespace for safe HMR
 */
-const makeStore = (initialState, options) => {
-    return createStore(reducer, initialState);
+const makeRootSpace = (options) => {
+    return new Space({ env: process.env.NODE_ENV });
 };
 
 class Page extends Component {
-    static getInitialProps({store, isServer, pathname, query}) {
-        store.dispatch({type: 'FOO', payload: 'foo'}); // component will be able to read from store's state when rendered
-        return {custom: 'custom'}; // you can pass some custom props to component from here
+    static getInitialProps({space, isServer, pathname, query}) {
+        space.setState({ foo: bar }); // component will be able to read from space's state when rendered
+        return { custom: 'custom' }; // you can pass some custom props to component from here
     }
     render() {
+        const { space } = this.props;
+        const rootSpace = space.parentSpace('root');
         return (
             <div>
-                <div>Prop from Redux {this.props.foo}</div>
+                <div>Value from page's Space {space.state.foo}</div>
+                <div>Value from root space {rootSpace.state.env}</div>
                 <div>Prop from getInitialProps {this.props.custom}</div>
             </div>
         )
     }
 }
 
-Page = withRedux(makeStore, (state) => ({foo: state.foo}))(Page);
+// It's recommended to import `makeRootSpace` from a speparate module
+// so that it can be shared between pages
+// The second parameter to withSpace is the initial state for the page
+Page = withSpace(makeRootSpace, { foo: '' })(Page);
 
 export default Page;
 ```
 
 ## How it works
 
-No magic is involved, it auto-creates Redux store when `getInitialProps` is called by Next.js and then passes this store
-down to React Redux's `Provider`, which is used to wrap the original component, also automatically. On the client side
-it also takes care of using same store every time, whereas on server new store is created for each request.
+When you page component is wrapped by `withSpace`, it auto-creates the root space when `getInitialProps` is called by Next.js along with a sub-space dedicated to the page component (with the same name as the component). The page's space is passed down to the page's component as a prop called `space`. On the client side it also takes care of using same root space every time, whereas on server a new root space is created for each request, which is then set on the client.
 
-The `withRedux` function accepts `makeStore` as first argument, all other arguments are internally passed to React
-Redux's `connect()` function for simplicity. The `makeStore` function will receive initial state as one argument and
-should return a new instance of redux store each time when called, no memoization needed here, it is automatically done
-inside the wrapper.
+The `withSpace` function accepts a `makeRootSpace` function as first argument. The `makeRootSpace` function will receive initial state as the first argument and should return a new instance `Space` each time when called, no memoization needed here, it is automatically handled by the `withSpace` wrapper. Pass the desired initial state for the page's space as the second parameter when calling `withSpace`.
 
-`withRedux` also optionally accepts an object. In this case only 1 parameter is passed which can contain the following
+`withSpace` also optionally accepts an object. In this case only 1 parameter is passed which can contain the following
 configuration properties:
 
-- `createStore` (required, function) : the `makerStore` function as described above
-- `storeKey` (optional, string) : the key used on `window` to persist the store on the client
+- `createRootSpace` (required, function) : the `makeRootSpace` function as described above
+- `rootSpaceKey` (optional, string) : the key used on `window` to persist the root space on the client
 - `debug` (optional, boolean) : enable debug logging
-- `mapStateToProps`, `mapDispatchToProps`, `mergeProps` (optional, functions) : functions to pass to `react-redux` `connect` method
-- `connectOptions` (optional, object) : configuration to pass to `react-redux` `connect` method
 
-
-When `makeStore` is invoked it is also provided a configuration object as the second parameter, which includes:
+When `makeRootSpace` is invoked it is also provided a configuration object as the second parameter, which includes:
 
 - `isServer` (boolean): `true` if called while on the server rather than the client
 - `req` (Request): The `next.js` `getInitialProps` context `req` parameter
 - `query` (object): The `next.js` `getInitialProps` context `query` parameter
 
-The object also includes all configuration as passed to `withRedux` if called with an object of configuration properties.
+The object also includes all configuration as passed to `withSpace` if called with an object of configuration properties.
 
-**Use `withRedux` to wrap only top level pages! All other components should keep using regular `connect` function of
-React Redux.**
+**Use `withSpaceAce` to wrap only top level pages! All other components should keep using `subSpace(…)`**
 
-Although it is possible to create server or client specific logic in both `createStore` function and `getInitialProps`
-method I highly don't recommend to have different behavior. This may cause errors and checksum mismatches which in turn
-will ruin the whole purpose of server rendering.
+Although it is possible to create server or client specific logic in both `createRootSpace` function and `getInitialProps` it is highly recommended to not have different behaviour. This may cause errors and checksum mismatches which in turn will ruin the whole purpose of server rendering.
 
-I don't recommend to use `withRedux` in both top level pages and `_document.js` files, Next.JS
-[does not have provide](https://github.com/zeit/next.js/issues/1267) a reliable way to determine the sequence when
-components will be rendered. So per Next.JS recommendation it is better to have just data-agnostic things in `_document`
-and wrap top level pages with another HOC that will use `withRedux`. 
+I don't recommend to using `withSpace` in both top level pages and `_document.js` files, Next.JS [does not provide](https://github.com/zeit/next.js/issues/1267) a reliable way to determine the sequence when components will be rendered. So per Next.JS recommendation it is better to have just data-agnostic things in `_document` and wrap top level pages with another [HOC](https://medium.com/@franleplant/react-higher-order-components-in-depth-cf9032ee6c3e) that will use `withSpace`.
 
-## Async actions in `getInitialProps`
+## Async data in `getInitialProps`
 
 ```js
-function someAsyncAction() {
-    return {
-        type: 'FOO',
-        payload: new Promise((res) => { res('foo'); })
-    }
-}
-
 function getInitialProps({store, isServer, pathname, query}) {
-    
-    // lets create an action using creator
-    const action = someAsyncAction();
-    
-    // now the action has to be dispatched
-    store.dispatch(action);
-    
-    // once the payload is available we can resume and render the app
-    return action.payload.then((payload) => {
-        // you can do something with payload now
-        return {custom: 'custom'}; 
+    const startingDataPromise = fetch(…).then(res => res.json());
+
+    // once the data arrives we can resume and render the app
+    return startingDataPromise.then((startingData) => {
+        space.setState({ userId: startingData.userId });
+        return {custom: 'custom'};
     });
-    
+
 }
 ```
-
-## Usage with Immutable.JS
-
-If you want to use Immutable.JS then you have to modify your `makeStore` function, it should detect if object is an instance of Immutable.JS, and if not - convert it using `Immutable.fromJS`:
-
-```js
-export default function makeStore(initialState = {}) {
-    // Nasty duck typing, you should find a better way to detect
-    if (!initialState.toJS) initialState = Immutable.fromJS(initialState);
-    return createStore(reducer, initialState, applyMiddleware(thunk));
-}
-```
-
-The reason is that `initialState` is transferred over the network from server to client as a plain object (it is automatically serialized on server) so it should be converted back to Immutable.JS on client side.
-
-Here you can find better ways to detect if an object is Immutable.JS: https://stackoverflow.com/a/31919454/5125659.
 
 ## Resources
 
-* [next-redux-saga](https://github.com/bmealhouse/next-redux-saga)
-* [How to use with Redux and Redux Saga](https://www.robinwieruch.de/nextjs-redux-saga/)
-* Redux Saga Example: https://gist.github.com/pesakitan22/94b4984140ba0f2c9e52c5289a7d833e.
-* [Typescript type definitions](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/next-redux-wrapper) > `npm install @types/next-redux-wrapper`
+* [SpaceAce](https://github.com/JonAbrams/SpaceAce)
+* [next-redux-wrapper](https://github.com/kirill-konshin/next-redux-wrapper)

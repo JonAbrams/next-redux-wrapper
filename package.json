@@ -1,7 +1,7 @@
 {
-  "name": "next-redux-wrapper",
+  "name": "next-spaceace-wrapper",
   "version": "1.3.4",
-  "description": "Redux wrapper for Next.js",
+  "description": "SpaceAce wrapper for Next.js",
   "main": "src/index.js",
   "scripts": {
     "test": "jest",
@@ -9,7 +9,10 @@
     "build": "next build",
     "serve": "next start"
   },
-  "author": "Kirill Konshin",
+  "author": "Jon Abrams",
+  "contributors": [
+    "Kirill Konshin"
+  ],
   "devDependencies": {
     "babel-jest": "^20.0.3",
     "babel-preset-react-app": "^3.0.1",
@@ -44,8 +47,6 @@
     "testEnvironment": "jsdom"
   },
   "babel": {
-    "presets": [
-      "react-app"
-    ]
+    "presets": ["react-app"]
   }
 }
