@@ -20,14 +20,12 @@
     "next": "^2.4.3",
     "react": "^15.4.2",
     "react-dom": "^15.6.1",
-    "react-redux": "^5.0.2",
     "react-test-renderer": "^15.4.2",
-    "redux": "^3.6.0",
-    "redux-promise-middleware": "^4.2.0"
+    "spaceace": "^0.9.23"
   },
   "peerDependencies": {
     "react": "*",
-    "react-redux": "*"
+    "spaceace": "*"
   },
   "repository": {
     "type": "git",
@@ -47,6 +45,8 @@
     "testEnvironment": "jsdom"
   },
   "babel": {
-    "presets": ["react-app"]
+    "presets": [
+      "react-app"
+    ]
   }
 }

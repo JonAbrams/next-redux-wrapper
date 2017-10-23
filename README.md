@@ -28,7 +28,7 @@ import withSpace from "next-spaceace-wrapper";
 * @param {boolean} options.debug User-defined debug mode param
 * @param {string} options.storeKey This key will be used to preserve store in global namespace for safe HMR
 */
-const makeRootSpace = (options) => {
+const makeRootSpace = () => {
     return new Space({ env: process.env.NODE_ENV });
 };
 

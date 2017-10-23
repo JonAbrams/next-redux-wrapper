@@ -3,9 +3,9 @@ node_js:
 - stable
 deploy:
   provider: npm
-  email: kirill.konshin@gmail.com
+  email: jon@jonabrams.com
   api_key: $NPM_TOKEN
   skip_cleanup: true
   on:
     tags: true
-    repo: kirill-konshin/next-redux-wrapper
+    repo: JonAbrams/next-spaceace-wrapper

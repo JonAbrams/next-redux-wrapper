@@ -1,16 +1,18 @@
 import Link from "next/link";
 import React from "react";
-import {makeStore} from "../components/store";
-import wrapper from "../src";
+import { makeRootSpace } from "../components/rootSpace";
+import withSpace from "../src";
 
-const Foo = wrapper(makeStore)(() => (<div>Foo</div>));
+const Foo = withSpace(makeRootSpace)(() => <div>Foo</div>);
 
-export default wrapper(makeStore)(() => (
-    <div>
-        <div>This component makes an error, this is normal.</div>
-        <Foo/>
-        <nav>
-            <Link href="/"><a>Navigate to index</a></Link>
-        </nav>
-    </div>
+export default withSpace(makeRootSpace)(() => (
+  <div>
+    <div>This component makes an error, this is normal.</div>
+    <Foo />
+    <nav>
+      <Link href="/">
+        <a>Navigate to index</a>
+      </Link>
+    </nav>
+  </div>
 ));
