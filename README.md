@@ -26,7 +26,7 @@ import withSpace from "next-spaceace-wrapper";
 * @param {boolean} options.isServer indicates whether it is a server side or client side
 * @param {Request} options.req NodeJS Request object (if any)
 * @param {boolean} options.debug User-defined debug mode param
-* @param {string} options.storeKey This key will be used to preserve store in global namespace for safe HMR
+* @param {string} options.spaceKey This key will be used to preserve the root space in global namespace for safe HMR
 */
 const makeRootSpace = () => {
     return new Space({ env: process.env.NODE_ENV });
@@ -88,7 +88,7 @@ I don't recommend to using `withSpace` in both top level pages and `_document.js
 ## Async data in `getInitialProps`
 
 ```js
-function getInitialProps({store, isServer, pathname, query}) {
+function getInitialProps({space, isServer, pathname, query}) {
     const startingDataPromise = fetch(…).then(res => res.json());
 
     // once the data arrives we can resume and render the app

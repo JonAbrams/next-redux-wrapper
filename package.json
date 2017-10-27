@@ -21,7 +21,7 @@
     "react": "^15.4.2",
     "react-dom": "^15.6.1",
     "react-test-renderer": "^15.4.2",
-    "spaceace": "^0.9.23"
+    "spaceace": "^0.9.24"
   },
   "peerDependencies": {
     "react": "*",
