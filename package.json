@@ -1,6 +1,6 @@
 {
   "name": "next-spaceace-wrapper",
-  "version": "1.3.4",
+  "version": "0.9.0",
   "description": "SpaceAce wrapper for Next.js",
   "main": "src/index.js",
   "scripts": {
@@ -10,9 +10,7 @@
     "serve": "next start"
   },
   "author": "Jon Abrams",
-  "contributors": [
-    "Kirill Konshin"
-  ],
+  "contributors": ["Kirill Konshin"],
   "devDependencies": {
     "babel-jest": "^20.0.3",
     "babel-preset-react-app": "^3.0.1",
@@ -45,8 +43,6 @@
     "testEnvironment": "jsdom"
   },
   "babel": {
-    "presets": [
-      "react-app"
-    ]
+    "presets": ["react-app"]
   }
 }
