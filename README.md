@@ -35,7 +35,7 @@ const makeRootSpace = () => {
 class Page extends Component {
     static getInitialProps({space, isServer, pathname, query}) {
         space.setState({ foo: bar }); // component will be able to read from space's state when rendered
-        return { custom: 'custom' }; // you can pass some custom props to component from here
+        return { custom: 'custom' }; // you can also pass some additional custom props to components
     }
     render() {
         const { space } = this.props;
@@ -52,8 +52,7 @@ class Page extends Component {
 
 // It's recommended to import `makeRootSpace` from a speparate module
 // so that it can be shared between pages
-// The second parameter to withSpace is the initial state for the page
-Page = withSpace(makeRootSpace, { foo: '' })(Page);
+Page = withSpace(makeRootSpace)(Page);
 
 export default Page;
 ```

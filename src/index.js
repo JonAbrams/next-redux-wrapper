@@ -7,7 +7,7 @@ var skipMerge = ["initialState", "initialProps", "isServer", "space"];
 var DEFAULT_KEY = "__NEXT_SPACEACE_ROOT_SPACE__";
 var isBrowser = typeof window !== "undefined";
 
-function initRootSpace(makeRootSpace, initialState, cmpName, context, config) {
+function initRootSpace(makeRootSpace, cmpName, context, config) {
   var req = context.req;
   var isServer = !!req && !isBrowser;
   var spaceKey = config.spaceKey;
@@ -19,19 +19,10 @@ function initRootSpace(makeRootSpace, initialState, cmpName, context, config) {
     query: context.query
   });
 
-  function mergeInitialState(space) {
-    if (!space.state[cmpName]) {
-      var mergeState = {};
-      mergeState[cmpName] = initialState;
-      space.setState(mergeState, "next-spaceace-wrapper-page-load");
-    }
-  }
-
   // Always make a new store if server
   if (isServer) {
     if (!req._space) {
       req._space = makeRootSpace();
-      mergeInitialState(req._space);
     }
     return req._space;
   }
@@ -41,7 +32,6 @@ function initRootSpace(makeRootSpace, initialState, cmpName, context, config) {
   // Memoize store if client
   if (!window[spaceKey]) {
     window[spaceKey] = makeRootSpace();
-    mergeInitialState(window[spaceKey]);
   }
 
   return window[spaceKey];
@@ -106,13 +96,11 @@ module.exports = function(createRootSpace) {
 
       this.space = hasSpace
         ? props.space
-        : initRootSpace(
-            createRootSpace,
-            initialState,
-            Cmp.name,
-            {},
-            config
-          ).subSpace(Cmp.name); // client case, no context but has initialState
+        : initRootSpace(createRootSpace, Cmp.name, {}, config).subSpace(
+            Cmp.name
+          ); // client case, no context but has initialState
+
+      this.space.setState(props.space.state, "next-spaceace-wrapper-page-init");
     }
 
     _inherits(WrappedCmp, React.Component);
@@ -131,7 +119,6 @@ module.exports = function(createRootSpace) {
         ctx.isServer = !!ctx.req;
         ctx.space = initRootSpace(
           createRootSpace,
-          initialState,
           Cmp.name,
           { req: ctx.req, query: ctx.query, res: ctx.res },
           config
@@ -169,7 +156,6 @@ module.exports = function(createRootSpace) {
       // Subscribe to changes so that it can re-render
       self.space.parentSpace("root").subscribe(function() {
         if (!self._isMounted) return;
-        console.log("Re-rendering", Cmp.name);
         self.forceUpdate();
       });
     };
@@ -179,8 +165,6 @@ module.exports = function(createRootSpace) {
     };
 
     WrappedCmp.prototype.render = function() {
-      var self = this;
-      console.log(self.constructor.name, " re-rendering!");
       return React.createElement(
         Cmp,
         Object.assign({}, this.props, {
