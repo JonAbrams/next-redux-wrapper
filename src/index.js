@@ -22,7 +22,7 @@ function initRootSpace(makeRootSpace, cmpName, context, config) {
   // Always make a new store if server
   if (isServer) {
     if (!req._space) {
-      req._space = makeRootSpace({ isServer, context });
+      req._space = makeRootSpace({ isServer: isServer, context: context });
     }
     return req._space;
   }
@@ -31,7 +31,7 @@ function initRootSpace(makeRootSpace, cmpName, context, config) {
 
   // Memoize store if client
   if (!window[spaceKey]) {
-    window[spaceKey] = makeRootSpace({ isServer, context });
+    window[spaceKey] = makeRootSpace({ isServer: isServer, context: context });
   }
 
   return window[spaceKey];
