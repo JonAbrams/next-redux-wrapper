@@ -154,7 +154,7 @@ module.exports = function(createRootSpace) {
       self._isMounted = true;
 
       // Subscribe to changes so that it can re-render
-      self.space.parentSpace("root").subscribe(function() {
+      self.space.rootSpace.subscribe(function() {
         if (!self._isMounted) return;
         self.forceUpdate();
       });
