@@ -73,9 +73,7 @@ function _inherits(subClass, superClass) {
 module.exports = function(createRootSpace) {
   var config = { spaceKey: DEFAULT_KEY, debug: _debug };
 
-  return function(Cmp, initialState) {
-    initialState = initialState || {};
-
+  return function(Cmp) {
     function WrappedCmp() {
       _possibleConstructorReturn(
         this,
@@ -90,7 +88,7 @@ module.exports = function(createRootSpace) {
 
       if (!props.space) {
         throw new Error(
-          "Attention, withRootSpace should only be used only with top level pages!"
+          "Attention, withRootSpace should be used only with top level pages!"
         );
       }
 
@@ -154,7 +152,7 @@ module.exports = function(createRootSpace) {
       self._isMounted = true;
 
       // Subscribe to changes so that it can re-render
-      self.space.rootSpace.subscribe(function() {
+      self.space.getRootSpace().subscribe(function() {
         if (!self._isMounted) return;
         self.forceUpdate();
       });

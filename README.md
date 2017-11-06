@@ -39,7 +39,7 @@ class Page extends Component {
     }
     render() {
         const { space } = this.props;
-        const rootSpace = space.parentSpace('root');
+        const rootSpace = space.getRootSpace();
         return (
             <div>
                 <div>Value from page's Space {space.state.foo}</div>
