@@ -1,6 +1,6 @@
 {
   "name": "next-spaceace-wrapper",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "SpaceAce wrapper for Next.js",
   "main": "src/index.js",
   "scripts": {
