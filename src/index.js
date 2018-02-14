@@ -98,7 +98,12 @@ module.exports = function(createRootSpace) {
             Cmp.name
           ); // client case, no context but has initialState
 
-      this.space.setState(props.space.state, "next-spaceace-wrapper-page-init");
+      if (!hasSpace) {
+        this.space.setState(
+          props.space.state,
+          "next-spaceace-wrapper-page-init"
+        );
+      }
     }
 
     _inherits(WrappedCmp, React.Component);
