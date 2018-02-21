@@ -7,7 +7,7 @@ var skipMerge = ["initialState", "initialProps", "isServer", "space"];
 var DEFAULT_KEY = "__NEXT_SPACEACE_ROOT_SPACE__";
 var isBrowser = typeof window !== "undefined";
 
-function initRootSpace(makeRootSpace, cmpName, context, config) {
+function initRootSpace(makeRootSpace, context, config) {
   var req = context.req;
   var isServer = !!req && !isBrowser;
   var spaceKey = config.spaceKey;
@@ -73,7 +73,8 @@ function _inherits(subClass, superClass) {
 module.exports = function(createRootSpace) {
   var config = { spaceKey: DEFAULT_KEY, debug: _debug };
 
-  return function(Cmp) {
+  return function(Cmp, name) {
+    name = name || Cmp.name;
     function WrappedCmp() {
       _possibleConstructorReturn(
         this,
@@ -92,13 +93,11 @@ module.exports = function(createRootSpace) {
         );
       }
 
-      this.space = hasSpace
-        ? props.space
-        : initRootSpace(createRootSpace, Cmp.name, {}, config).subSpace(
-            Cmp.name
-          ); // client case, no context but has initialState
+      if (hasSpace) {
+        this.space = props.space;
+      } else {
+        this.space = initRootSpace(createRootSpace, {}, config).subSpace(name); // client case, no context but has initialState
 
-      if (!hasSpace) {
         this.space.setState(
           props.space.state,
           "next-spaceace-wrapper-page-init"
@@ -113,7 +112,7 @@ module.exports = function(createRootSpace) {
         ctx = ctx || {};
         if (config.debug)
           console.log(
-            Cmp.name,
+            name,
             "- 1. WrappedCmp.getInitialProps wrapper",
             ctx.req && ctx.req._space
               ? "takes the req space"
@@ -122,10 +121,9 @@ module.exports = function(createRootSpace) {
         ctx.isServer = !!ctx.req;
         ctx.space = initRootSpace(
           createRootSpace,
-          Cmp.name,
           { req: ctx.req, query: ctx.query, res: ctx.res },
           config
-        ).subSpace(Cmp.name);
+        ).subSpace(name);
 
         res(
           _Promise.all([
@@ -138,7 +136,7 @@ module.exports = function(createRootSpace) {
       }).then(function(arr) {
         if (config.debug)
           console.log(
-            Cmp.name,
+            name,
             "- 3. WrappedCmp.getInitialProps has space state",
             arr[1].state
           );
