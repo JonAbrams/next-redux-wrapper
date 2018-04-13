@@ -4,7 +4,7 @@ SpaceAce wrapper for Next.js
 
 ## Status
 
-WIP. DO NOT USE (yet). So far just the readme's been touched.
+Seems to work fine with Next.js 4. Has problems with hot reloading in Next.js 5.
 
 Forked from [next-redux-wrapper](https://github.com/kirill-konshin/next-redux-wrapper)
 
@@ -17,7 +17,7 @@ npm install next-spaceace-wrapper
 Wrapper should be attached your page components (located in your project's `/pages`). For safety it is recommended that you wrap all pages, whether they use SpaceAce or not.
 
 Here is an example minimal setup:
-```js
+```jsx
 import React, {Component} from "react";
 import withSpace from "next-spaceace-wrapper";
 
@@ -42,7 +42,7 @@ class Page extends Component {
         const rootSpace = space.getRootSpace();
         return (
             <div>
-                <div>Value from page's Space {space.state.foo}</div>
+                <div>Value from page’s Space {space.state.foo}</div>
                 <div>Value from root space {rootSpace.state.env}</div>
                 <div>Prop from getInitialProps {this.props.custom}</div>
             </div>
@@ -50,7 +50,7 @@ class Page extends Component {
     }
 }
 
-// It's recommended to import `makeRootSpace` from a speparate module
+// It’s recommended to import `makeRootSpace` from a speparate module
 // so that it can be shared between pages
 Page = withSpace(makeRootSpace)(Page);
 
@@ -78,11 +78,11 @@ When `makeRootSpace` is invoked it is also provided a configuration object as th
 
 The object also includes all configuration as passed to `withSpace` if called with an object of configuration properties.
 
-**Use `withSpaceAce` to wrap only top level pages! All other components should keep using `subSpace(…)`**
+**Use `withRootSpace` to wrap only top level pages! All other components should keep using `subSpace(…)`**
 
 Although it is possible to create server or client specific logic in both `createRootSpace` function and `getInitialProps` it is highly recommended to not have different behaviour. This may cause errors and checksum mismatches which in turn will ruin the whole purpose of server rendering.
 
-I don't recommend to using `withSpace` in both top level pages and `_document.js` files, Next.JS [does not provide](https://github.com/zeit/next.js/issues/1267) a reliable way to determine the sequence when components will be rendered. So per Next.JS recommendation it is better to have just data-agnostic things in `_document` and wrap top level pages with another [HOC](https://medium.com/@franleplant/react-higher-order-components-in-depth-cf9032ee6c3e) that will use `withSpace`.
+I don't recommend to using `withRootSpace` in both top level pages and `_document.js` files, Next.JS [does not provide](https://github.com/zeit/next.js/issues/1267) a reliable way to determine the sequence when components will be rendered. So per Next.JS recommendation it is better to have just data-agnostic things in `_document` and wrap top level pages with another [HOC](https://medium.com/@franleplant/react-higher-order-components-in-depth-cf9032ee6c3e) that will use `withRootSpace`.
 
 ## Async data in `getInitialProps`
 
