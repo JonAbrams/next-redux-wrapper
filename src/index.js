@@ -88,9 +88,10 @@ module.exports = function(createRootSpace) {
       var hasSpace = !!props.space && !!props.space.subSpace;
 
       if (!props.space) {
-        throw new Error(
+        console.error(
           "Attention, withRootSpace should be used only with top level pages!"
         );
+        return;
       }
 
       if (hasSpace) {
@@ -98,10 +99,12 @@ module.exports = function(createRootSpace) {
       } else {
         this.space = initRootSpace(createRootSpace, {}, config).subSpace(name); // client case, no context but has initialState
 
-        this.space.setState(
-          props.space.state,
-          "next-spaceace-wrapper-page-init"
-        );
+        if (Object.keys(this.space.state).length === 0) {
+          this.space.setState(
+            props.space.state,
+            "next-spaceace-wrapper-page-init"
+          );
+        }
       }
     }
 
