@@ -100,6 +100,10 @@ module.exports = function(createRootSpace) {
         this.space = initRootSpace(createRootSpace, {}, config).subSpace(name); // client case, no context but has initialState
 
         if (Object.keys(this.space.state).length === 0) {
+          if (props.rootSpace && props.rootSpace.state) {
+            this.space.rootSpace.setState(props.rootSpace.state);
+          }
+
           this.space.setState(
             props.space.state,
             "next-spaceace-wrapper-page-init"
@@ -147,6 +151,7 @@ module.exports = function(createRootSpace) {
         return {
           isServer: arr[0],
           space: arr[1],
+          rootSpace: arr[1].rootSpace,
           initialProps: arr[3]
         };
       });
